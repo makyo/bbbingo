@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>{{ title }} | bbbingo</title>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}" />
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1><a href="/">
+                    <span class="darker">b</span>
+                    <span class="dark">b</span>
+                    b
+                    i
+                    n
+                    g
+                    o
+                </a></h1>
+                <h2>{{title}}</h2>
+                <nav>
+                    <ul>
+                        {% if g.loggedin %}
+                            <li><a href="/build">Build a card</a></li>
+                            <li><a href="/logout">Log out</a></li>
+                        {% else %}
+                            <li><a href="/login">Log in</a></li>
+                            <li><a href="/register">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </header>
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    <section class="messages">
+                        <ul>
+                            {% for category, message in messages %}
+                                <li class="{{category}}">{{message}}</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                {% endif %}
+            {% endwith %}
+            <section>
+                {% block content %}{% endblock %}
+            </section>
+            <footer>
+                &copy; 2017, Madison Scott-Clary<br />
+                <a class="github-button" href="https://github.com/makyo/bbbingo.me" data-icon="octicon-star" data-count-href="/makyo/bbbingo.me/stargazers" data-count-api="/repos/makyo/bbbingo.me#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star makyo/bbbingo.me on GitHub">Star</a>
+                <a class="github-button" href="https://github.com/makyo/bbbingo.me/fork" data-icon="octicon-repo-forked" data-count-href="/makyo/bbbingo.me/network" data-count-api="/repos/makyo/bbbingo.me#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork makyo/bbbingo.me on GitHub">Fork</a>
+                <a class="github-button" href="https://github.com/makyo/bbbingo.me/issues" data-icon="octicon-issue-opened" data-count-api="/repos/makyo/bbbingo.me#open_issues_count" data-count-aria-label="# issues on GitHub" aria-label="Issue makyo/bbbingo.me on GitHub">Issue</a>
+            </footer>
+        </div>
+    </body>
+</html>

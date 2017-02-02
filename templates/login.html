@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" class="stacked">
+    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}" />
+    <div class="field">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" />
+    </div>
+    <div class="field">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" />
+    </div>
+    <div class="field">
+        <button type="submit">Log me in before you go go~</button>
+    </div>
+</form>
+{% endblock %}

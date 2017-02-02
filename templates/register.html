@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" class="stacked">
+    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}" />
+    <div class="field">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" />
+    </div>
+    <div class="field">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" />
+    </div>
+    <div class="field">
+        <label for="id_confirm_password">Password again</label>
+        <input type="password" name="confirm_password" id="id_confirm_password" />
+    </div>
+    <div class="field">
+        <label for="id_email">Email addy</label>
+        <input type="text" name="email" id="id_email" />
+        <p>NB: haven't yet got password retrieval up and running, so this is just for show.</p>
+    </div>
+    <div class="field">
+        <button type="submit">Sign me the heck up~</button>
+    </div>
+</form>
+{% endblock %}
