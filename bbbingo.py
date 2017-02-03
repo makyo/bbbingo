@@ -1,8 +1,10 @@
+import bcrypt
 import hashlib
 import os
 
 from flask import (
     Flask,
+    Response,
     abort,
     flash,
     g,
@@ -19,6 +21,10 @@ app.config["MONGODB_SETTINGS"] = {'DB': 'bbbingo'}
 app.config["SECRET_KEY"] = os.urandom(12)
 app.config["DEBUG"] = False
 db = MongoEngine(app)
+
+# Older python compat - db has to be defined first.
+import models
+
 
 @app.before_request
 def before_request():
@@ -47,7 +53,19 @@ def front():
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        pass
+        try:
+            user = models.User.objects.get(
+                username=request.form.get('username'))
+            if bcrypt.checkpw(request.form.get('password').encode('utf-8'),
+                              user.password.encode('utf-8')):
+                return redirect("/")
+            else:
+                raise
+        except Exception as e:
+            print(e)
+            flash(
+                u'There was an error trying to log in, yo. Sorry, try again?',
+                'error')
     return render_template('login.html',
                            title='Go on, log in')
 
@@ -87,7 +105,13 @@ def export_play(card_id, play_id, format):
 
 @app.route('/0x<card_id>.<format>', methods=['GET'])
 def export_card(card_id, format):
-    pass
+    text = '<text x="50" y="50" text-anchor="middle">{}</text>'.format(
+        card_id)
+    contents = render_template('card_embed.svg',
+                               values=[text for _ in range(0, 25)])
+    svg = render_template('card_standalone.svg',
+                          card=contents)
+    return Response(svg, mimetype='image/svg+xml')
 
 
 @app.route('/0x<card_id>', methods=['GET'])

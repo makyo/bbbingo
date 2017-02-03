@@ -5,16 +5,17 @@ class User(db.Document):
     username = db.StringField()
     email = db.StringField()
     password = db.StringField()
-    cards = db.ListField(db.ReferenceField(Card))
+    cards = db.ListField(db.ReferenceField('Card'))
 
 
 class Card(db.Document):
     name = db.StringField()
     owner = db.ReferenceField(User)
-    values = db.ListField(db.IntegerField())
+    values = db.ListField(db.IntField())
+    pin_frees_space = db.BooleanField()
     privacy = db.StringField()  # public|unlisted|private
     playable = db.StringField()  # yes|owner|no
-    solves = db.EmbeddedDocumentListField(Solve)
+    solves = db.EmbeddedDocumentListField('Solve')
 
 
 class Solve(db.Document):

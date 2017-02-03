@@ -1,0 +1,166 @@
+<svg width="505" height="555" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Nunito');
+
+        .bbbingo-card rect.background {
+            fill: #222;
+            stroke-width: 0px;
+        }
+        .bbbingo-card text {
+            font-family: "Nunito", sans-serif;
+            fill: #ccc;
+        }
+        .bbbingo-card text.title {
+            font-size: 45px;
+            font-style: italic;
+        }
+        .bbbingo-card tspan.paler {
+            fill: #555;
+        }
+        .bbbingo-card tspan.pale {
+            fill: #aaa;
+        }
+        .bbbingo-card rect {
+            fill: none;
+            stroke: #aaa;
+            stroke-width: 5px;
+        }
+        .bbbingo-card path {
+            fill: #555;
+        }
+        .bbbingo-card text.freespace {
+            font-size: 10pt;
+        }
+        .bbbingo-card .text g text {
+            font-size: 12px;
+        }
+    </style>
+    <g class="bbbingo-card" transform="translate(2.5, 2.25)">
+        <rect class="background" x="-2.5" y="-2.5" width="507.5" height="557.5" />
+        <text class="title" x="0" y="0" dominant-baseline="hanging">
+            <tspan class="paler">b</tspan>
+            <tspan class="pale">b</tspan>
+            b
+            i
+            n
+            g
+            o
+        </text>
+        <g transform="translate(0, 50)">
+            <rect x="0" y="0" width="100" height="100" />
+            <rect x="100" y="0" width="100" height="100" />
+            <rect x="200" y="0" width="100" height="100" />
+            <rect x="300" y="0" width="100" height="100" />
+            <rect x="400" y="0" width="100" height="100" />
+
+            <rect x="0" y="100" width="100" height="100" />
+            <rect x="100" y="100" width="100" height="100" />
+            <rect x="200" y="100" width="100" height="100" />
+            <rect x="300" y="100" width="100" height="100" />
+            <rect x="400" y="100" width="100" height="100" />
+
+            <rect x="0" y="200" width="100" height="100" />
+            <rect x="100" y="200" width="100" height="100" />
+            <rect x="200" y="200" width="100" height="100" />
+            <rect x="300" y="200" width="100" height="100" />
+            <rect x="400" y="200" width="100" height="100" />
+
+            <rect x="0" y="300" width="100" height="100" />
+            <rect x="100" y="300" width="100" height="100" />
+            <rect x="200" y="300" width="100" height="100" />
+            <rect x="300" y="300" width="100" height="100" />
+            <rect x="400" y="300" width="100" height="100" />
+
+            <rect x="0" y="400" width="100" height="100" />
+            <rect x="100" y="400" width="100" height="100" />
+            <rect x="200" y="400" width="100" height="100" />
+            <rect x="300" y="400" width="100" height="100" />
+            <rect x="400" y="400" width="100" height="100" />
+
+            <path d="M 202.5 242.5 l 40 -40 l -40 0 z" />
+            <text class="freespace" transform="rotate(-45) translate(-12.5, 310)">Free</text>
+
+            <g class="text">
+                <g transform="translate(0, 0)">
+                    {{ values[0] }}
+                </g>
+                <g transform="translate(100, 0)">
+                    {{ values[1] }}
+                </g>
+                <g transform="translate(200, 0)">
+                    {{ values[2] }}
+                </g>
+                <g transform="translate(300, 0)">
+                    {{ values[3] }}
+                </g>
+                <g transform="translate(400, 0)">
+                    {{ values[4] }}
+                </g>
+
+                <g transform="translate(0, 100)">
+                    {{ values[5] }}
+                </g>
+                <g transform="translate(100, 100)">
+                    {{ values[6] }}
+                </g>
+                <g transform="translate(200, 100)">
+                    {{ values[7] }}
+                </g>
+                <g transform="translate(300, 100)">
+                    {{ values[8] }}
+                </g>
+                <g transform="translate(400, 100)">
+                    {{ values[9] }}
+                </g>
+
+                <g transform="translate(0, 200)">
+                    {{ values[10] }}
+                </g>
+                <g transform="translate(100, 200)">
+                    {{ values[11] }}
+                </g>
+                <g transform="translate(200, 200)">
+                    {{ values[12] }}
+                </g>
+                <g transform="translate(300, 200)">
+                    {{ values[13] }}
+                </g>
+                <g transform="translate(400, 200)">
+                    {{ values[14] }}
+                </g>
+
+                <g transform="translate(0, 300)">
+                    {{ values[15] }}
+                </g>
+                <g transform="translate(100, 300)">
+                    {{ values[16] }}
+                </g>
+                <g transform="translate(200, 300)">
+                    {{ values[17] }}
+                </g>
+                <g transform="translate(300, 300)">
+                    {{ values[18] }}
+                </g>
+                <g transform="translate(400, 300)">
+                    {{ values[19] }}
+                </g>
+
+                <g transform="translate(0, 400)">
+                    {{ values[20] }}
+                </g>
+                <g transform="translate(100, 400)">
+                    {{ values[21] }}
+                </g>
+                <g transform="translate(200, 400)">
+                    {{ values[22] }}
+                </g>
+                <g transform="translate(300, 400)">
+                    {{ values[23] }}
+                </g>
+                <g transform="translate(400, 400)">
+                    {{ values[24] }}
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
