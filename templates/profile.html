@@ -1,1 +1,32 @@
 {% extends "base.html" %}
+
+{% block content %}
+<div class="half">
+    <h3>Cards</h3>
+    <ul>
+        {% for card in user.cards %}
+            {% if card.privacy == 'public' or
+                  (card.privacy == 'loggedin' and session.user) or
+                  (card.privacy in ['unlisted', 'private'] and user == session.user) %}
+                 <li><a href="/bbb{{ slug(card) }}">{{ card.name }}</a></li>
+            {% endif %}
+        {% else %}
+            <li><em>No cards</em></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="half">
+    <h3>Plays</h3>
+    <ul>
+        {% for play in user.plays %}
+            {% if play.card.privacy == 'public' or
+                  (play.card.privacy == 'loggedin' and session.user) or
+                  (play.card.privacy in ['unlisted', 'private'] and user == session.user) %}
+                 <li><a href="/bbb{{ slug(play.card) }}/{{ slug(play) }}">{{ card.name }}: play by {{ user.username }}</a></li>
+            {% endif %}
+        {% else %}
+            <li><em>No plays</em></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

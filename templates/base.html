@@ -3,25 +3,26 @@
 <html>
     <head>
         <title>{{ title }} | bbbingo</title>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}?cache={{ cachebust() }}" />
         <script async defer src="https://buttons.github.io/buttons.js"></script>
     </head>
     <body>
         <div class="wrapper">
             <header>
                 <h1><a href="/">
-                    <span class="darker">b</span>
+                    <small>alpha!</small><span class="darker">b</span>
                     <span class="dark">b</span>
                     b
                     i
                     n
                     g
-                    o
-                </a></h1>
+                    o</a></h1>
                 <h2>{{title}}</h2>
                 <nav>
                     <ul>
-                        {% if g.loggedin %}
+                        {% if session.user %}
+                            <li><a href="/~{{ session.user.username }}">~{{ session.user.username }}</a></li>
                             <li><a href="/build">Build a card</a></li>
                             <li><a href="/logout">Log out</a></li>
                         {% else %}

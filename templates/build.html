@@ -1,1 +1,43 @@
 {% extends "base.html" %}
+
+{% block content %}
+<form id="details">
+    <div class="field">
+        <label for="id_name">Card name</label>
+        <input type="text" id="id_name" value="{{ card.name }}" />
+    </div>
+    <div class="field">
+        <label for="id_privacy">Privacy settings</label>
+        <select id="id_privacy">
+            <option{% if card.privacy == 'public' %} selected{% endif %} value="public">Public</option>
+            <option{% if card.privacy == 'unlisted' %} selected{% endif %} value="unlisted">Unlisted</option>
+            <option{% if card.privacy == 'loggedin' %} selected{% endif %} value="loggedin">Logged in users only</option>
+            <option{% if card.privacy == 'private' %} selected{% endif %} value="private">Private</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="id_playable">Card playing settings</label>
+        <select id="id_playable">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+            <option value="owner">Only the owner can play</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="id_frees_pace">Use free space</label>
+        <input type="checkbox" id="id_free_space" />
+    </div>
+    <div class="field">
+        <label for="free_space_text">Free space slot text</label>
+        <input type="text" id="id_frees_pace_text" value="{{ card.free_space_text }}" />
+    </div>
+</form>
+
+<div class="card build">
+    {% include "card_embed.svg" %}
+</div>
+
+<div class="buildform">
+    <input type="text"
+</div>
+{% endblock %}

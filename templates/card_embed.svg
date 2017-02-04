@@ -1,9 +1,9 @@
-<svg width="505" height="555" xmlns="http://www.w3.org/2000/svg">
+<svg width="505" height="555" viewbox="0 0 505 555" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Nunito');
 
         .bbbingo-card rect.background {
-            fill: #222;
+            fill: #223;
             stroke-width: 0px;
         }
         .bbbingo-card text {
@@ -18,12 +18,16 @@
             fill: #555;
         }
         .bbbingo-card tspan.pale {
-            fill: #aaa;
+            fill: #888;
         }
         .bbbingo-card rect {
             fill: none;
             stroke: #aaa;
             stroke-width: 5px;
+        }
+        .bbbingo-card rect.selected {
+            fill: #445;
+            stroke: #fff;
         }
         .bbbingo-card path {
             fill: #555;
@@ -33,6 +37,10 @@
         }
         .bbbingo-card .text g text {
             font-size: 12px;
+        }
+        .bbbingo-card a, a:visited, a:active, a:hover {
+            fill: #ccc;
+            text-decoration: underline;
         }
     </style>
     <g class="bbbingo-card" transform="translate(2.5, 2.25)">
@@ -46,6 +54,8 @@
             g
             o
         </text>
+        <text class="name" x="500" y="0" dominant-baseline="hanging" text-anchor="end"><a xlink:href="/bbb{{ slug(card) }}" target="_blank">{{ card.name if card.name != None else 'untitled' }}</a></text>
+        <text class="author" x="500" y="20px" dominant-baseline="hanging" text-anchor="end">by <a xlink:href="/~{{ card.owner.username }}">{{ card.owner.username }}</a></text>
         <g transform="translate(0, 50)">
             <rect x="0" y="0" width="100" height="100" />
             <rect x="100" y="0" width="100" height="100" />
@@ -77,88 +87,90 @@
             <rect x="300" y="400" width="100" height="100" />
             <rect x="400" y="400" width="100" height="100" />
 
-            <path d="M 202.5 242.5 l 40 -40 l -40 0 z" />
-            <text class="freespace" transform="rotate(-45) translate(-12.5, 310)">Free</text>
+            {% if card.free_space %}
+                <path d="M 202.5 242.5 l 40 -40 l -40 0 z" />
+                <text class="freespace" transform="rotate(-45) translate(-12.5, 310)">Free</text>
+            {% endif %}
 
             <g class="text">
                 <g transform="translate(0, 0)">
-                    {{ values[0] }}
+                    {{ slot_text(card.values[0]) }}
                 </g>
                 <g transform="translate(100, 0)">
-                    {{ values[1] }}
+                    {{ slot_text(card.values[1]) }}
                 </g>
                 <g transform="translate(200, 0)">
-                    {{ values[2] }}
+                    {{ slot_text(card.values[2]) }}
                 </g>
                 <g transform="translate(300, 0)">
-                    {{ values[3] }}
+                    {{ slot_text(card.values[3]) }}
                 </g>
                 <g transform="translate(400, 0)">
-                    {{ values[4] }}
+                    {{ slot_text(card.values[4]) }}
                 </g>
 
                 <g transform="translate(0, 100)">
-                    {{ values[5] }}
+                    {{ slot_text(card.values[5]) }}
                 </g>
                 <g transform="translate(100, 100)">
-                    {{ values[6] }}
+                    {{ slot_text(card.values[6]) }}
                 </g>
                 <g transform="translate(200, 100)">
-                    {{ values[7] }}
+                    {{ slot_text(card.values[7]) }}
                 </g>
                 <g transform="translate(300, 100)">
-                    {{ values[8] }}
+                    {{ slot_text(card.values[8]) }}
                 </g>
                 <g transform="translate(400, 100)">
-                    {{ values[9] }}
+                    {{ slot_text(card.values[9]) }}
                 </g>
 
                 <g transform="translate(0, 200)">
-                    {{ values[10] }}
+                    {{ slot_text(card.values[10]) }}
                 </g>
                 <g transform="translate(100, 200)">
-                    {{ values[11] }}
+                    {{ slot_text(card.values[11]) }}
                 </g>
                 <g transform="translate(200, 200)">
-                    {{ values[12] }}
+                    {{ slot_text(card.values[12]) }}
                 </g>
                 <g transform="translate(300, 200)">
-                    {{ values[13] }}
+                    {{ slot_text(card.values[13]) }}
                 </g>
                 <g transform="translate(400, 200)">
-                    {{ values[14] }}
+                    {{ slot_text(card.values[14]) }}
                 </g>
 
                 <g transform="translate(0, 300)">
-                    {{ values[15] }}
+                    {{ slot_text(card.values[15]) }}
                 </g>
                 <g transform="translate(100, 300)">
-                    {{ values[16] }}
+                    {{ slot_text(card.values[16]) }}
                 </g>
                 <g transform="translate(200, 300)">
-                    {{ values[17] }}
+                    {{ slot_text(card.values[17]) }}
                 </g>
                 <g transform="translate(300, 300)">
-                    {{ values[18] }}
+                    {{ slot_text(card.values[18]) }}
                 </g>
                 <g transform="translate(400, 300)">
-                    {{ values[19] }}
+                    {{ slot_text(card.values[19]) }}
                 </g>
 
                 <g transform="translate(0, 400)">
-                    {{ values[20] }}
+                    {{ slot_text(card.values[20]) }}
                 </g>
                 <g transform="translate(100, 400)">
-                    {{ values[21] }}
+                    {{ slot_text(card.values[21]) }}
                 </g>
                 <g transform="translate(200, 400)">
-                    {{ values[22] }}
+                    {{ slot_text(card.values[22]) }}
                 </g>
                 <g transform="translate(300, 400)">
-                    {{ values[23] }}
+                    {{ slot_text(card.values[23]) }}
                 </g>
                 <g transform="translate(400, 400)">
-                    {{ values[24] }}
+                    {{ slot_text(card.values[24]) }}
                 </g>
             </g>
         </g>

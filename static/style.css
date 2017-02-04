@@ -3,7 +3,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #222;
+    background-color: #223;
     color: #ccc;
     font-family: "Nunito", sans-serif;
 }
@@ -25,6 +25,7 @@ a:active {
 
 header {
     border-bottom: 5px solid #555;
+    padding-left: 0.5em;
 }
 
 header h1 {
@@ -35,6 +36,13 @@ header h1 {
 header h1 a {
     text-decoration: none;
     color: #ccc;
+}
+
+header h1 small {
+    transform: rotate(-74deg) translate(8px, 5px);
+    display: inline-block;
+    font-size: 9pt;
+    color: #555;
 }
 
 header nav ul {
@@ -54,20 +62,65 @@ header nav ul li a {
 }
 
 .dark {
-    color: #aaa;
+    color: #888;
 }
 
 .darker {
     color: #555;
 }
 
+.messages ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.messages ul li {
+    border: 3px solid #223;
+    border-radius: 6px;
+    padding: 0.5em;
+}
+
+.messages ul li.success {
+    border-color: #8c8;
+    background-color: #aca;
+    color: #262;
+}
+
+.messages ul li.error {
+    border-color: #c88;
+    background-color: #caa;
+    color: #622;
+}
+
 section {
     margin: 2em 0;
+    vertical-align: top;
+}
+
+.half {
+    max-width: 450px;
+    display: inline-block;
+    vertical-align: top;
+    border: none;
+    margin: 0;
+    padding: 0.5em;
+}
+
+.card {
+    text-align: center;
+}
+
+svg {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 505px;
+    height: auto;
 }
 
 form {
     text-align: center;
-    max-width: 50%;
+    max-width: 505px;
     margin: 0 auto;
 }
 
@@ -88,12 +141,20 @@ form .field p {
     text-align: left;
 }
 
-form label:after {
-    content: ':';
+form .field label,
+form .field input,
+form .field select {
+    display: inline-block;
+    width: 50%;
 }
 
-form.stacked label {
-    display: block;
+form .field label {
+    width: 25%;
+    text-align: right;
+}
+
+form label:after {
+    content: ':';
 }
 
 footer {
@@ -101,3 +162,11 @@ footer {
     text-align: center;
     border-top: 1px solid #555;
 }
+
+
+/* Non-mobile styles */
+@media only screen and (min-width: 960px) {
+    .half {
+        width: 450px;
+    }
+}.
