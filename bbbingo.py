@@ -1,12 +1,13 @@
-from base64 import (
-    b16encode,
-    urlsafe_b64decode,
-    urlsafe_b64encode,
-)
 import bcrypt
 import hashlib
+import html
 import os
 import random
+from random_words import (
+    RandomNicknames,
+    RandomWords,
+)
+import re
 
 from flask import (
     Flask,
@@ -29,9 +30,19 @@ app.config["SECRET_KEY"] = os.urandom(12)
 app.config["DEBUG"] = True
 app.url_map.strict_slashes = False
 db = MongoEngine(app)
+rw = RandomWords()
+rn = RandomNicknames()
 
 # Older python compat - db has to be defined first.
 import models
+
+
+def user_from_session():
+    if session.get('user'):
+        return models.User.objects.get(
+            username=session.get('user')['username'])
+    else:
+        return None
 
 
 @app.before_request
@@ -50,14 +61,6 @@ def generate_csrf_token():
     return session.get('_csrf_token', '')
 
 
-def _enslug(model):
-    return urlsafe_b64encode(model.id.binary).decode()
-
-
-def _deslug(id):
-    return b16encode(urlsafe_b64decode(id)).decode().lower()
-
-
 def cachebust():
     return hashlib.sha1(os.urandom(40)).hexdigest() \
         if app.config['DEBUG'] else 0
@@ -68,7 +71,9 @@ def fake_wrap(text, width, lines):
     result = []
     while len(parts) > 0:
         part = ''
-        while len(part) < width:
+        while parts and len(part) < width:
+            if len(part) > 0 and len(part) + len(parts[0]) > int(width * 1.5):
+                break
             part = ' '.join([part, parts.pop(0)])
         result.append(part.strip())
     if len(result) > lines:
@@ -78,26 +83,54 @@ def fake_wrap(text, width, lines):
 
 
 def generate_slot_svg(text):
-    return '<text>{}</text>'.format(text)
-
+    slot_text = ''
+    if not text:
+        return slot_text
+    lines = fake_wrap(text, 10, 6)
+    i = 1
+    offset = 45 - (len(lines) * 15) / 2
+    for line in lines:
+        slot_text += '<text x="50" y="{}" text-anchor="middle" ' \
+            'dominant-baseline="haning">{}</text>'.format(
+                offset + 15 * i, html.escape(line))
+        i += 1
+    return slot_text
 
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
-app.jinja_env.globals['slug'] = _enslug
 app.jinja_env.globals['cachebust'] = cachebust
 app.jinja_env.globals['slot_text'] = generate_slot_svg
 
 
-def user_from_session():
-    if session.get('user'):
-        return models.User.objects.get(id=session.get('user')['_id']['$oid'])
-    else:
-        return None
+ALLOWED_CATEGORIES = (
+    'uncategorized',
+    'funny',
+    'kinky',
+    'snarky',
+    'eye-roll',
+    'treasture hunt',
+    'personal',
+)
 
 
 @app.route('/', methods=['GET'])
 def front():
+    recent_cards = models.Card.objects.filter(
+        privacy='public').order_by('-id')[:10]
+    recent_plays = []
+    for play in models.Play.objects.all().order_by('-id').select_related():
+        if play.card.privacy == 'public':
+            recent_plays.append(play)
+        if len(recent_plays) == 10:
+            break
     return render_template('front.html',
-                           title='Hey there~')
+                           title='Hey there~',
+                           cards=recent_cards,
+                           plays=recent_plays)
+
+
+@app.route('/conduct', methods=['GET'])
+def conduct():
+    return render_template('coc.html', title='Code of Conduct')
 
 
 @app.route('/login', methods=['GET','POST'])
@@ -109,7 +142,7 @@ def login():
             if bcrypt.checkpw(request.form.get('password').encode('utf-8'),
                               user.password.encode('utf-8')):
                 session['user'] = user
-                return redirect("/")
+                return redirect(request.args.get('next', '/'))
             else:
                 raise
         except:
@@ -122,8 +155,11 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    del session['user']
-    g.user = None
+    try:
+        del session['user']
+        g.user = None
+    except:
+        pass
     flash('Boom, logged out. Come back soon!', 'success')
 
 
@@ -170,139 +206,201 @@ def profile(username):
 def build_card():
     if session.get('user'):
         card = models.Card(
+            slug='-'.join(rw.random_words(count=4)),
             owner=g.user,
             privacy='public',
-            playable='yes')
+            playable='yes',
+            values= [''] * 25)
         card.save()
         g.user.cards.append(card)
         g.user.save()
-        return redirect('/build/bbb{}'.format(_enslug(card)))
+        return redirect('/build/{}'.format(card.slug))
     else:
         return redirect('/login')
 
 
-@app.route('/build/bbb<card_id>', methods=['GET'])
+@app.route('/build/<card_id>', methods=['GET'])
 def edit_card(card_id):
     if session.get('user'):
-        card = models.Card.objects.get(pk__endswith=_deslug(card_id))
+        card = models.Card.objects.get(slug=card_id)
         if not card:
             abort(404)
         if g.user != card.owner:
             abort(403)
         return render_template('build.html',
                                title="Building {}! Woo!".format(
-                                   'card' if card.name is None else card.name),
-                               card=card)
+                                   card.slug if card.name is None
+                                   else card.name),
+                               card=card,
+                               allowed_categories=ALLOWED_CATEGORIES)
     else:
-        return redirect('/login')
+        return redirect('/login?next=/build/{}'.format(card_id))
 
 
-@app.route('/accept/card/bbb<card_id>', methods=['PUT'])
+@app.route('/accept/card/<card_id>', methods=['POST'])
 def accept_card_data(card_id):
     if session.get('user'):
+        generate_csrf_token()
         try:
-            card = models.Card.objects.get(pk__endswith=_deslug(card_id))
+            card = models.Card.objects.get(slug=card_id)
             if not card:
-                abort(404)
+                return jsonify({
+                    'status': 'failure',
+                    'message': 'not found',
+                    'csrf_token': session.get('_csrf_token'),
+                })
             if g.user != card.owner:
-                abort(403)
+                return jsonify({
+                    'status': 'failure',
+                    'message': 'permission denied: card belongs to {}, '
+                               'you are {}'.format(
+                                   card.owner.username, g.owner.username),
+                    'csrf_token': session.get('_csrf_token'),
+                })
             slot = request.form.get('slot')
             text = request.form.get('text')
-            card.free_space = request.form.get('free_space', False)
-            card.free_space_text= request.form.get('free_space_text',
-                                                   card.free_space_text)
             if slot == 'name':
                 card.name = text
+            elif slot == 'category':
+                card.category = text
             elif slot == 'privacy':
                 card.privacy = text
             elif slot == 'playable':
                 card.playable = text
+            elif slot == 'free_space':
+                card.free_space = text == 'True'
+            elif slot == 'free_space_text':
+                card.free_space_text = text
             else:
                 card.values[int(slot)] = text
             card.save()
-            return '{"status": "success"}'
+            return jsonify({
+                'status': 'success',
+                'csrf_token': session.get('_csrf_token'),
+            })
         except Exception as e:
             return jsonify({
-                "status": "failure",
-                "message": str(e),
+                'status': 'failure',
+                'message': str(e),
+                'csrf_token': session.get('_csrf_token'),
             })
     else:
         abort(403)
 
 
-@app.route('/play/bbb<card_id>', methods=['GET'])
+@app.route('/play/<card_id>', methods=['GET'])
 def play_card(card_id):
     if session.get('user'):
-        card = models.Card.objects.get(pk=_deslug(card_id))
-        order = list(range(1, 25 if card.free_space else 26))
+        card = models.Card.objects.get(slug=card_id)
+        order = list(range(0, 24 if card.free_space else 25))
         random.shuffle(order)
+        if card.free_space:
+            order[order.index(12)] = 24
+            order = order[:12] + [12] + order[12:]
+
+        parts = [
+            rn.random_nick(gender='f').lower(),
+            rn.random_nick(gender='m').lower(),
+            rn.random_nick(gender='u').lower(),
+        ]
+        random.shuffle(parts)
         play = models.Play(
-            owner=session.get('user'),
+            slug='-'.join(parts),
+            owner=g.user,
             card=card,
-            order=order)
+            order=order,
+            solution=[False] * 25)
         play.save()
         g.user.plays.append(play)
         g.user.save()
-        return redirect('/play/bbb{}/{}'.format(card_id, _enslug(play)))
+        return redirect('/play/{}/{}'.format(card.slug, play.slug))
     else:
-        return redirect('/login')
+        return redirect('/login?next=/play/{}'.format(card_id))
 
 
-@app.route('/play/bbb<card_id>/<play_id>', methods=['GET'])
+@app.route('/play/<card_id>/<play_id>', methods=['GET'])
 def edit_play(card_id, play_id):
     if session.get('user'):
-        card = models.Card.objects.get(pk__endswith=_deslug(card_id))
-        play = models.Play.objects.get(pk__endswith=_deslug(play_id))
+        card = models.Card.objects.get(slug=card_id)
+        play = models.Play.objects.get(slug=play_id)
         if not card or not play:
             abort(404)
         if g.user != play.owner:
             abort(403)
         return render_template('play.html',
                                play=play,
-                               card=card)
+                               card=card,
+                               title='{}! Playtime!'.format(
+                                   card.slug if card.name is None
+                                   else card.name))
     else:
-        return redirect('/login')
+        return redirect('/login?next=/play/{}/{}'.format(card_id, play_id))
 
 
-@app.route('/accept/play/<play_id>', methods=['PUT'])
+@app.route('/accept/play/<play_id>', methods=['POST'])
 def accept_play_data(play_id):
     if session.get('user'):
+        generate_csrf_token()
         try:
-            play = models.Play.objects.get(pk__endswith=_deslug(play_id))
+            play = models.Play.objects.get(slug=play_id)
             if not play:
-                abort(404)
+                return jsonify({
+                    'status': 'failure',
+                    'message': 'play not found',
+                    'csrf_token': session.get('_csrf_token'),
+                })
             if g.user != play.owner:
-                abort(403)
+                return jsonify({
+                    'status': 'failure',
+                    'message': 'permission denied: play belongs to {}, '
+                               'you are {}'.format(
+                                   play.owner.username, g.owner.username),
+                    'csrf_token': session.get('_csrf_token'),
+                })
             slot = request.form.get('slot')
             text = request.form.get('text')
             if slot == 'description':
                 play.description = text
             else:
-                play.values[int(slot)] = text is not None
+                play.solution[int(slot)] = text == 'mark'
             play.save()
-            return '{"status": "success"}'
+            return jsonify({
+                'status': 'success',
+                'csrf_token': session.get('_csrf_token'),
+            })
         except Exception as e:
             return jsonify({
                 "status": "failure",
                 "message": str(e),
+                'csrf_token': session.get('_csrf_token'),
             })
     else:
         abort(403)
 
 
-@app.route('/bbb<card_id>/<play_id>', methods=['GET'])
-def view_play(card_id, play_id):
-    card = models.Card.objects.get(pk__endswith=_deslug(card_id))
-    play = models.Play.objects.get(pk__endswith=_deslug(play_id))
+@app.route('/<part1>-<part2>-<part3>-<part4>/<play_id>', methods=['GET'])
+def view_play(part1, part2, part3, part4, play_id):
+    card = models.Card.objects.get(
+        slug='-'.join([part1, part2, part3, part4]))
+    if not card.is_viewable(g.user):
+        abort(403)
+    play = models.Play.objects.get(slug=play_id)
     return render_template('view_play.html',
                            card=card,
-                           play=play)
+                           play=play,
+                           title='{}\'s play of {}'.format(
+                               play.owner.username,
+                               card.slug if card.name is None \
+                                   else card.name))
 
 
-@app.route('/0x<card_id>/<play_id>.<format>', methods=['GET'])
-def export_play(card_id, play_id, format):
-    card = models.Card.objects.get(pk__endswith=_deslug(card_id))
-    play = models.Play.objects.get(pk__endswith=_deslug(play_id))
+@app.route('/<part1>-<part2>-<part3>-<part4>/<play_id>.<format>', methods=['GET'])
+def export_play(part1, part2, part3, part4, play_id, format):
+    card = models.Card.objects.get(
+        slug='-'.join([part1, part2, part3, part4]))
+    if not card.is_viewable(g.user):
+        abort(403)
+    play = models.Play.objects.get(slug=play_id)
     if format == 'svg':
         contents = render_template('card_embed.svg',
                                    card=card,
@@ -316,9 +414,12 @@ def export_play(card_id, play_id, format):
     abort(404)
 
 
-@app.route('/bbb<card_id>.<format>', methods=['GET'])
-def export_card(card_id, format):
-    card = models.Card.objects.get(pk__endswith=_deslug(card_id))
+@app.route('/<part1>-<part2>-<part3>-<part4>.<format>', methods=['GET'])
+def export_card(part1, part2, part3, part4, format):
+    card = models.Card.objects.get(
+        slug='-'.join([part1, part2, part3, part4]))
+    if not card.is_viewable(g.user):
+        abort(403)
     contents = render_template('card_embed.svg',
                                card=card)
     if not request.args.get('embed', False):
@@ -329,15 +430,17 @@ def export_card(card_id, format):
     return Response(svg, mimetype='image/svg+xml')
 
 
-@app.route('/bbb<card_id>', methods=['GET'])
-def view_card(card_id):
-    card = models.Card.objects.get(pk__endswith=_deslug(card_id))
-    if card.privacy == 'private' and g.user != card.owner:
-        abort(403)
-    if card.privacy == 'loggedin' and not session.get('user'):
+@app.route('/<part1>-<part2>-<part3>-<part4>', methods=['GET'])
+def view_card(part1, part2, part3, part4):
+    card = models.Card.objects.get(
+        slug='-'.join([part1, part2, part3, part4]))
+    if not card.is_viewable(g.user):
         abort(403)
     return render_template('view_card.html',
-                           card=card)
+                           card=card,
+                           title='Neat, it\'s {}\'s card {}'.format(
+                               card.owner.username,
+                               card.slug if card.name is None else card.name))
 
 
 if __name__ == '__main__':

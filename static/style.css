@@ -4,18 +4,18 @@ body {
     margin: 0;
     padding: 0;
     background-color: #223;
-    color: #ccc;
+    color: #dcd;
     font-family: "Nunito", sans-serif;
 }
 
 a {
-    color: #aaa;
+    color: #bab;
 }
 
 a:visited,
 a:hover,
 a:active {
-    color: #bbb;
+    color: #cbc;
 }
 
 .wrapper {
@@ -24,7 +24,7 @@ a:active {
 }
 
 header {
-    border-bottom: 5px solid #555;
+    border-bottom: 5px solid #656;
     padding-left: 0.5em;
 }
 
@@ -42,7 +42,7 @@ header h1 small {
     transform: rotate(-74deg) translate(8px, 5px);
     display: inline-block;
     font-size: 9pt;
-    color: #555;
+    color: #656;
 }
 
 header nav ul {
@@ -62,11 +62,11 @@ header nav ul li a {
 }
 
 .dark {
-    color: #888;
+    color: #878;
 }
 
 .darker {
-    color: #555;
+    color: #656;
 }
 
 .messages ul {
@@ -88,9 +88,9 @@ header nav ul li a {
 }
 
 .messages ul li.error {
-    border-color: #c88;
-    background-color: #caa;
-    color: #622;
+    border-color: #a22;
+    background-color: #faa;
+    color: #822;
 }
 
 section {
@@ -107,8 +107,29 @@ section {
     padding: 0.5em;
 }
 
-.card {
+.half.center h3 {
     text-align: center;
+}
+
+.metadata {
+    display: inline-block;
+    max-width: 445px;
+    vertical-align: top;
+    margin: 0;
+    padding: 0 1em;
+}
+
+.card {
+    display: block;
+    text-align: center;
+    vertical-align: top;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 510px;
+}
+
+.card.build {
+    display: inline-block;
 }
 
 svg {
@@ -116,6 +137,101 @@ svg {
     width: 100%;
     max-width: 505px;
     height: auto;
+}
+
+.caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-top: 5px dashed #bab;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+
+.collapse {
+    position: relative;
+}
+
+.collapse h3, .collapse h2 {
+    text-align: center;
+}
+
+.collapse > input {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 20em);
+    width: 40em;
+    height: 2em;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.collapse > .collapsible {
+    height: 0;
+    opacity: 0;
+    overflow: scroll;
+    transition: all 2s;
+}
+
+.collapse > .instructions {
+    height: 3em;
+    opacity: 1;
+    transition: all 1s;
+}
+
+.collapse > input:checked ~ .collapsible {
+    height: 500px;
+    opacity: 1;
+    transition: all 2s;
+}
+
+.collapse > input:checked ~ .instructions {
+    height: 0;
+    opacity: 0;
+    transition: all 1s;
+}
+
+ul.fancypants {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0.5em;
+}
+
+ul.fancypants li {
+    margin: 0 0 0.5em 0;
+    padding: 0.5em;
+    background-color: #28283a;
+    border: 0 solid transparent;
+    border-radius: 4px;
+}
+
+ul.fancypants li:nth-of-type(odd) {
+    background-color: #343445;
+}
+
+.buildform {
+    display: none;
+    padding: 1em;
+    border: 5px solid #656;
+    background-color: #767;
+    border-radius: 5px;
+    max-width: 200px;
+    text-align: center;
+    position: absolute;
+}
+
+.buildform:before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-bottom: 20px dashed #656;
+    border-right: 20px solid transparent;
+    border-left: 20px solid transparent;
+    position: absolute;
+    top: -25px;
+    left: 95px;
 }
 
 form {
@@ -126,10 +242,11 @@ form {
 
 form .field {
     padding: 1em;
+    vertical-align: top;
 }
 
 form .field:not(:first-of-type) {
-    border-top: 1px dashed #555;
+    border-top: 1px dashed #656;
     padding-top: 0.5em;
 }
 
@@ -141,15 +258,26 @@ form .field p {
     text-align: left;
 }
 
-form .field label,
 form .field input,
-form .field select {
+form .field select,
+form .field textarea {
+    vertical-align: top;
     display: inline-block;
-    width: 50%;
+    width: 55%;
+    background-color: #dcd;
+    color: #323;
+    border: 2px solid #545;
+    border-radius: 4px;
+}
+
+form .field input {
+    height: 12pt;
 }
 
 form .field label {
-    width: 25%;
+    vertical-align: top;
+    display: inline-block;
+    width: 40%;
     text-align: right;
 }
 
@@ -160,7 +288,17 @@ form label:after {
 footer {
     font-size: 10pt;
     text-align: center;
-    border-top: 1px solid #555;
+    border-top: 1px solid #656;
+}
+
+.overlay {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(32, 0, 32, 0.2);
 }
 
 
@@ -168,5 +306,8 @@ footer {
 @media only screen and (min-width: 960px) {
     .half {
         width: 450px;
+    }
+    .metadata {
+        width: 400px;
     }
 }.

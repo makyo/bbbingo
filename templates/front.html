@@ -1,5 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-Let's play some bbbingo, baby~
+
+<div class="collapse">
+    <h2>Let's play some bbbingo, baby~ <span class="caret"></span></h2>
+    <input type="checkbox" />
+    <p class="instructions">Yo! Got some new cards and some recent plays for you. Check 'em out! Or make your own, you know? New here? Bang on that title just above. Tell you all about it.</p>
+    <div class="collapsible">
+        <div class="half">
+            <p>bbbingo lets you create your own bingo cards with custom text. They can be funny, they can be kinky, they can be super personal for you. You can make them private. You can make them unlisted. You can let everyone play them!</p>
+
+            <p>Oh yeah! Didn't I say? You can play the bingo cards! If the creator lets you, that is. When you hit play, you'll get your very own randomized card. You can keep this open however long you like, even bookmark it to keep playing. Did you know you can show off your results, too?! When you're done, you can share them with everyone! Share them with your dog! Share them with your mom! Share them with your mom's dog!</p>
+
+            <p>It's pronounced with a stutter because the creator used to stutter. Also the domain name was available.</p>
+        </div>
+
+        <div class="half">
+            <p><em>*adjusts glasses*</em> Let's go over some use cases, shall we?</p>
+            <ul>
+                <li>Heading to a con? Make a bbbingo card of stuff you expect to see and pass it around to your friends. Then you can play with things you do or see. Public frotting! Sunglasses inside! An arrest! An ambulance! First to do or see all of these in a row or a column wins!  Just...uh, be safe, please.</li>
+                <li>Set up a scavenger hunt! Make yourself a little ARG with things hidden around the house/town/internet, build up a story around it, and make finding each thing offer up more story. Then you can put hints (<code>ssss-split</code>, anyone?) for all of these in your bbbingo card. First person to go bbbingo wins!</li>
+                <li>Make you a kink bbbingo! List all your favorite kinky things to do/think about/look at porn of/RP in the squares. Next time you have a big ol' bash at your place, or you find a <em>particularly</em> fine image of the utmost quality, or you have a grand scene on Taps, play a game of bbbingo with your card!  Don't worry, if your card's private or unlisted, the play will be too...unless you like it being public~</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="half">
+    <h3>Recent cards!</h3>
+    <ul class="fancypants">
+        {% for card in cards %}
+            <li><a href="/{{ card.slug }}">{{ card.name if card.name else card.slug }}</a> by <a href="/~{{ card.owner.username }}">{{ card.owner.username }}</a></li>
+        {% else %}
+            <li><em>No recent cards! Go build some!</em></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="half">
+    <h3>Recent plays!</h3>
+    <ul class="fancypants">
+        {% for play in plays %}
+            <li><a href="/{{ play.card.slug }}/{{ play.slug }}">{{ play.description if play.description else play.slug }}</a> - <a href="/~{{ play.owner.username }}">{{ play.owner.username }}</a> played <a href="/{{ play.card.slug }}">{{ play.card.name }}</a> by <a href="/~{{ play.card.owner.username }}">{{ play.card.owner.username }}</a></li>
+        {% else %}
+            <li><em>No recent plays! Go play some cards!</em></li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

@@ -3,12 +3,12 @@
 {% block content %}
 <div class="half">
     <h3>Cards</h3>
-    <ul>
-        {% for card in user.cards %}
+    <ul class="fancypants">
+        {% for card in user.cards|reverse %}
             {% if card.privacy == 'public' or
                   (card.privacy == 'loggedin' and session.user) or
                   (card.privacy in ['unlisted', 'private'] and user == session.user) %}
-                 <li><a href="/bbb{{ slug(card) }}">{{ card.name }}</a></li>
+                 <li><a href="/{{ card.slug }}">{{ card.name }}</a> ({{ card.id.generation_time.strftime('%Y-%m-%d') }})</li>
             {% endif %}
         {% else %}
             <li><em>No cards</em></li>
@@ -17,12 +17,12 @@
 </div>
 <div class="half">
     <h3>Plays</h3>
-    <ul>
-        {% for play in user.plays %}
+    <ul class="fancypants">
+        {% for play in user.plays|reverse %}
             {% if play.card.privacy == 'public' or
                   (play.card.privacy == 'loggedin' and session.user) or
                   (play.card.privacy in ['unlisted', 'private'] and user == session.user) %}
-                 <li><a href="/bbb{{ slug(play.card) }}/{{ slug(play) }}">{{ card.name }}: play by {{ user.username }}</a></li>
+                 <li><a href="/{{ play.card.slug }}/{{ play.slug }}">{{ play.description if play.description else play.slug }}</a> - a play of <a href="/{{ play.card.slug }}">{{ play.card.name if play.card.name else play.card.slug }}</a> by {{ user.username }}</a> on {{ play.id.generation_time.strftime('%Y-%m-%d') }}</li>
             {% endif %}
         {% else %}
             <li><em>No plays</em></li>

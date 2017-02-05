@@ -1,1 +1,26 @@
 {% extends "base.html" %}
+
+{% block content %}
+<form class="metadata">
+    <h3>Playing {{ card.name if card.name else 'this thing here' }}</h3>
+    <div class="field">
+        <label for="id_description">Play description</label>
+        <textarea id="id_description"></textarea>
+    </div>
+    <div class="field">
+        <button id="id_update_description" type="button">Update description</button>
+    </div>
+</form>
+
+<div class="card build play">
+    Loading, loading loading...rawhiiiide.
+</div>
+
+<script type="text/javascript">
+window.bbbingo_card_id = '{{ play.card.slug }}';
+window.bbbingo_play_id = '{{ play.slug }}';
+window.csrf_token = '{{ csrf_token() }}';
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='zepto.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='play.js') }}"></script>
+{% endblock %}

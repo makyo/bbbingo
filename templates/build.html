@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form id="details">
+<form class="metadata">
     <div class="field">
         <label for="id_name">Card name</label>
-        <input type="text" id="id_name" value="{{ card.name }}" />
+        <input type="text" id="id_name" value="{{ '' if card.name == None else card.name }}" data-oldval="{{ '' if card.name == None else card.name }}" />
+    </div>
+    <div class="field">
+        <label for="id_category">Category</label>
+        <select id="id_category" data-oldval="{{ card.category }}">
+            {% for category in allowed_categories %}
+                <option{% if card.category == category %} selected{% endif %} value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="field">
         <label for="id_privacy">Privacy settings</label>
-        <select id="id_privacy">
+        <select id="id_privacy" data-oldval="{{ card.privacy }}">
             <option{% if card.privacy == 'public' %} selected{% endif %} value="public">Public</option>
             <option{% if card.privacy == 'unlisted' %} selected{% endif %} value="unlisted">Unlisted</option>
             <option{% if card.privacy == 'loggedin' %} selected{% endif %} value="loggedin">Logged in users only</option>
@@ -17,27 +25,42 @@
     </div>
     <div class="field">
         <label for="id_playable">Card playing settings</label>
-        <select id="id_playable">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-            <option value="owner">Only the owner can play</option>
+        <select id="id_playable" data-oldval="{{ card.playable }}">
+            <option{% if card.playable == 'yes' %} selected{% endif %} value="yes">Yes</option>
+            <option{% if card.playable == 'no' %} selected{% endif %} value="no">No</option>
+            <option{% if card.playable == 'owner' %} selected{% endif %} value="owner">Only the owner can play</option>
         </select>
     </div>
     <div class="field">
-        <label for="id_frees_pace">Use free space</label>
-        <input type="checkbox" id="id_free_space" />
+        <label for="id_free_space">Use free space</label>
+        <input{% if card.free_space %} checked{% endif %} type="checkbox" id="id_free_space" data-oldval="{{ card.free_space }}" />
     </div>
     <div class="field">
         <label for="free_space_text">Free space slot text</label>
-        <input type="text" id="id_frees_pace_text" value="{{ card.free_space_text }}" />
+        <input type="text" id="id_frees_pace_text" value="{{ '' if card.free_space_text == None else card.free_space_text }}" data-oldval="{{ '' if card.free_space_text == None else card.free_space_text }}" />
     </div>
+    <div class="field">
+        <button id="id_update_metadata" type="button">Update!</button>
+    </div>
+    <hr />
+    <a role="button" href="/{{ card.slug }}">Done! Lemme see it!</a>
 </form>
 
 <div class="card build">
-    {% include "card_embed.svg" %}
+    Loading, loading loading...rawhiiiide.
 </div>
 
 <div class="buildform">
-    <input type="text"
+    <input type="hidden" id="id_slot" />
+    <label for="id_text">Slot text</label>
+    <input type="text" id="id_text" />
+    <button id="id_update_slot" type="button">Set</button>
 </div>
+
+<script type="text/javascript">
+window.bbbingo_card_id = '{{ card.slug }}';
+window.csrf_token = '{{ csrf_token() }}';
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='zepto.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='build.js') }}"></script>
 {% endblock %}
