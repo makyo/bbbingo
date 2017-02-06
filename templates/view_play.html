@@ -2,6 +2,13 @@
 
 {% block content %}
 <div class="card">
+    <h3>{{ play.description if play.description else play.slug }}</h3>
     {% include "card_embed.svg" %}
 </div>
+{% if g.user.username == play.owner.username %}
+    <div>
+        <h3 class="center"><a href="/play/{{ play.card.slug }}/{{ play.slug }}">Keep on playing!</a></h3>
+        <p>You can play cards for as long as you like! Set it down for a while and keep on going. Just remember to view the card like this and you can get the link again, you know?</p>
+    </div>
+{% endif %}
 {% endblock %}

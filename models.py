@@ -20,7 +20,7 @@ class Card(db.Document):
     # public|loggedin|unlisted|private
     privacy = db.StringField(default='public')
     playable = db.StringField(default='yes')  # yes|owner|no
-    plays = db.EmbeddedDocumentListField('Play')
+    plays = db.ListField(db.ReferenceField('Play'))
 
     meta = {
         'ordering': ['-id'],

@@ -50,8 +50,7 @@
       '#id_category',
       '#id_privacy',
       '#id_playable',
-      '#id_free_space',
-      '#id_free_space_text'
+      '#id_free_space'
     ];
 
     fields.forEach(function(field) {

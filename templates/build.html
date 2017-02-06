@@ -36,14 +36,14 @@
         <input{% if card.free_space %} checked{% endif %} type="checkbox" id="id_free_space" data-oldval="{{ card.free_space }}" />
     </div>
     <div class="field">
-        <label for="free_space_text">Free space slot text</label>
-        <input type="text" id="id_frees_pace_text" value="{{ '' if card.free_space_text == None else card.free_space_text }}" data-oldval="{{ '' if card.free_space_text == None else card.free_space_text }}" />
-    </div>
-    <div class="field">
         <button id="id_update_metadata" type="button">Update!</button>
     </div>
     <hr />
-    <a role="button" href="/{{ card.slug }}">Done! Lemme see it!</a>
+    <p>
+        <a role="button" href="/{{ card.slug }}">Done! Lemme see it!</a><br />
+        <em>or</em><br />
+        <a href="/delete/{{ card.slug }}">Delete this card if you really want to.</a>
+    </p>
 </form>
 
 <div class="card build">

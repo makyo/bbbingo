@@ -26,11 +26,17 @@
     </div>
 </div>
 
+<ul class="pills">
+    {% for category in categories %}
+        <li><a href="/category/{{ category }}">{{ category }}</a></li>
+    {% endfor %}
+</ul>
+
 <div class="half">
     <h3>Recent cards!</h3>
     <ul class="fancypants">
         {% for card in cards %}
-            <li><a href="/{{ card.slug }}">{{ card.name if card.name else card.slug }}</a> by <a href="/~{{ card.owner.username }}">{{ card.owner.username }}</a></li>
+            <li>{% include "card_item.html" %}</li>
         {% else %}
             <li><em>No recent cards! Go build some!</em></li>
         {% endfor %}
@@ -40,7 +46,7 @@
     <h3>Recent plays!</h3>
     <ul class="fancypants">
         {% for play in plays %}
-            <li><a href="/{{ play.card.slug }}/{{ play.slug }}">{{ play.description if play.description else play.slug }}</a> - <a href="/~{{ play.owner.username }}">{{ play.owner.username }}</a> played <a href="/{{ play.card.slug }}">{{ play.card.name }}</a> by <a href="/~{{ play.card.owner.username }}">{{ play.card.owner.username }}</a></li>
+            <li>{% include "play_item.html" %}</li>
         {% else %}
             <li><em>No recent plays! Go play some cards!</em></li>
         {% endfor %}

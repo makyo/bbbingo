@@ -2,7 +2,7 @@
 
 {% block content %}
 <form class="metadata">
-    <h3>Playing {{ card.name if card.name else 'this thing here' }}</h3>
+    <h3>Playing {{ card.name if card.name else card.slug }}</h3>
     <div class="field">
         <label for="id_description">Play description</label>
         <textarea id="id_description"></textarea>
@@ -10,6 +10,10 @@
     <div class="field">
         <button id="id_update_description" type="button">Update description</button>
     </div>
+    <hr />
+    <a href="/{{ play.card.slug }}/{{ play.slug }}">Done for now! Lemme see my play!</a><br />
+    <em>or</em><br />
+    <a href="/delete/{{ play.card.slug }}/{{ play.slug }}">Delete this play if you really want to.</a>
 </form>
 
 <div class="card build play">

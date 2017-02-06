@@ -1,0 +1,5 @@
+<strong><a href="/{{ play.card.slug }}/{{ play.slug }}">{{ play.description[:35] if play.description else play.slug }}</a></strong> -
+<a href="/~{{ play.owner.username }}">{{ play.owner.username }}</a> played
+<a href="/{{ play.card.slug }}">{{ play.card.name }}</a>
+by <a href="/~{{ play.card.owner.username }}">{{ play.card.owner.username }}</a>
+on {{ play.id.generation_time.strftime('%Y-%m-%d') }}

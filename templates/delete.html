@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+    <div class="field">
+        <label for="id_delete_word">Hey, you sure you want to delete {% if card is defined %}{{ card.name if card.name else card.slug }}{% else %}{{ play.description if play.description else play.slug }}{% endif %}? If you do, just type this word in the field thingy<br />
+        <strong><code>{{ session['delete_word'] }}</code></strong></label>
+        <input type="text" name="delete_word" id="id_delete_word" />
+    </div>
+    <div class="field">
+        <button type="submit">Alright, delete it!</button>
+    </div>
+</form>
+{% endblock %}

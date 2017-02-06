@@ -1,6 +1,6 @@
 import bcrypt
+import cgi
 import hashlib
-import html
 import os
 import random
 from random_words import (
@@ -90,9 +90,8 @@ def generate_slot_svg(text):
     i = 1
     offset = 45 - (len(lines) * 15) / 2
     for line in lines:
-        slot_text += '<text x="50" y="{}" text-anchor="middle" ' \
-            'dominant-baseline="haning">{}</text>'.format(
-                offset + 15 * i, html.escape(line))
+        slot_text += '<text x="50" y="{}" text-anchor="middle">' \
+            '{}</text>'.format(offset + 15 * i, cgi.escape(line))
         i += 1
     return slot_text
 
@@ -106,8 +105,9 @@ ALLOWED_CATEGORIES = (
     'funny',
     'kinky',
     'snarky',
-    'eye-roll',
     'treasture hunt',
+    'convention',
+    'special occasion',
     'personal',
 )
 
@@ -125,7 +125,8 @@ def front():
     return render_template('front.html',
                            title='Hey there~',
                            cards=recent_cards,
-                           plays=recent_plays)
+                           plays=recent_plays,
+                           categories=ALLOWED_CATEGORIES)
 
 
 @app.route('/conduct', methods=['GET'])
@@ -161,6 +162,7 @@ def logout():
     except:
         pass
     flash('Boom, logged out. Come back soon!', 'success')
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET','POST'])
@@ -200,6 +202,32 @@ def profile(username):
                            title='Hey hey, look it\'s {}'.format(
                                user.username),
                            user=user)
+
+
+@app.route('/category/<category>', methods=['GET'])
+@app.route('/category/<category>/<int:page>', methods=['GET'])
+def category_list(category, page=1):
+    privacy_levels = ['public']
+    if session.get('user'):
+        privacy_levels.append('loggedin')
+    if page == 0:
+        page = 1
+    start = 20 * (page - 1)
+    cards = models.Card.objects.filter(
+        privacy__in=privacy_levels, category=category)[start:start + 20]
+    try:
+        test_next = models.Card.objects.filter(
+            privacy__in=privacy_levels, category=category)[start + 21]
+        has_next = test_next is not None
+    except IndexError:
+        has_next = False
+    return render_template('category.html',
+                           title='Ooh, the {} category'.format(category),
+                           category=category,
+                           categories=ALLOWED_CATEGORIES,
+                           has_next=has_next,
+                           page=page,
+                           cards=cards)
 
 
 @app.route('/build', methods=['GET'])
@@ -258,7 +286,7 @@ def accept_card_data(card_id):
                     'csrf_token': session.get('_csrf_token'),
                 })
             slot = request.form.get('slot')
-            text = request.form.get('text')
+            text = request.form.get('text')[:256]
             if slot == 'name':
                 card.name = text
             elif slot == 'category':
@@ -288,6 +316,25 @@ def accept_card_data(card_id):
         abort(403)
 
 
+@app.route('/delete/<card_id>', methods=['GET', 'POST'])
+def delete_card(card_id):
+    card = models.Card.objects.get(slug=card_id)
+    if request.method == 'POST':
+        if card.owner.username != g.user.username:
+            abort(403)
+        if session['delete_word'] == request.form.get('delete_word'):
+            card.delete()
+            return redirect('/~{}'.format(g.user.username))
+        else:
+            flash('That aint the word, yo!', 'error')
+    session['delete_word'] = rw.random_word()
+    return render_template('delete.html',
+                           title='Let go of your feelings, '
+                               '{}...'.format(card.name),
+                           card=card)
+
+
+
 @app.route('/play/<card_id>', methods=['GET'])
 def play_card(card_id):
     if session.get('user'):
@@ -311,6 +358,8 @@ def play_card(card_id):
             order=order,
             solution=[False] * 25)
         play.save()
+        card.plays.append(play)
+        card.save()
         g.user.plays.append(play)
         g.user.save()
         return redirect('/play/{}/{}'.format(card.slug, play.slug))
@@ -358,7 +407,7 @@ def accept_play_data(play_id):
                     'csrf_token': session.get('_csrf_token'),
                 })
             slot = request.form.get('slot')
-            text = request.form.get('text')
+            text = request.form.get('text')[:256]
             if slot == 'description':
                 play.description = text
             else:
@@ -376,6 +425,26 @@ def accept_play_data(play_id):
             })
     else:
         abort(403)
+
+
+@app.route('/delete/<card_id>/<play_id>', methods=['GET', 'POST'])
+def delete_play(card_id, play_id):
+    play = models.Play.objects.get(slug=play_id).select_related()
+    if request.method == 'POST':
+        if card_id != play.card.slug:
+            abort(404)
+        if play.owner.username != g.user.username:
+            abort(403)
+        if session['delete_word'] == request.form.get('delete_word'):
+            play.delete()
+            return redirect('/~{}', g.user.username)
+        else:
+            flash('That aint the word, yo!', 'error')
+    session['delete_word'] = rw.random_word()
+    return render_template('delete.html',
+                           title='Let go of your feelings, '
+                               '{}...'.format(play.description[:35]),
+                           play=play)
 
 
 @app.route('/<part1>-<part2>-<part3>-<part4>/<play_id>', methods=['GET'])
@@ -433,7 +502,7 @@ def export_card(part1, part2, part3, part4, format):
 @app.route('/<part1>-<part2>-<part3>-<part4>', methods=['GET'])
 def view_card(part1, part2, part3, part4):
     card = models.Card.objects.get(
-        slug='-'.join([part1, part2, part3, part4]))
+        slug='-'.join([part1, part2, part3, part4])).select_related()
     if not card.is_viewable(g.user):
         abort(403)
     return render_template('view_card.html',

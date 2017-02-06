@@ -1,0 +1,1 @@
+<strong><a href="/{{ card.slug }}">{{ card.name if card.name else card.slug }}</a></strong> ({{ card.plays|count }}) by <a href="/~{{ card.owner.username }}">{{ card.owner.username }}</a> ({{ card.id.generation_time.strftime('%Y-%m-%d') }})

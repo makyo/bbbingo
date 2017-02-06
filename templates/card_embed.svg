@@ -68,7 +68,7 @@
             g
             o
         </text>
-        <text class="name" x="500" y="0" dominant-baseline="hanging" text-anchor="end"><a xlink:href="/{{ card.slug }}" target="_blank">{{ card.name if card.name != None else 'untitled' }}</a></text>
+        <text class="name" x="500" y="0" dominant-baseline="hanging" text-anchor="end"><a xlink:href="/{{ card.slug }}" target="_blank">{{ card.name if card.name != None else card.slug }}</a> ({{ card.plays|count }})</text>
         <text class="author" x="500" y="20px" dominant-baseline="hanging" text-anchor="end">by <a xlink:href="/~{{ card.owner.username }}">{{ card.owner.username }}</a></text>
         <g transform="translate(0, 50)">
             <rect x="0" y="0" width="100" height="100" class="slot_0" />

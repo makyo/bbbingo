@@ -4,15 +4,23 @@
 <div class="card">
     {% include "card_embed.svg" %}
 </div>
+
+<div class="half center">
+    <h3>Plays of this card!</h3>
+
+    <ul class="fancypants">
+        {% for play in card.plays %}
+            <li>{% include "play_item.html" %}</li>
+        {% endfor %}
+    </ul>
+</div>
 {% if card.is_playable(g.user) %}
     <div class="half center">
         <h3><a href="/play/{{ card.slug }}">Play card!</a></h3>
 
         <p>Yeah! Click that header! That'll randomize you a card just for your very own, and you can start playing. All you do when you're there is tap at the squares to mark as seen, or to undo your marking. Each move is saved, so no worries on the data-loss front! I hope!</p>
-    </div>
 {% endif %}
 {% if g.user == card.owner %}
-    <div class="half center">
         <h3><a href="/build/{{ card.slug }}">Edit card!</a></h3>
 
         <p>Need to make changes? That's cool! Hopefully it's something small, though, right? If you change the meaning of a slot, that's fine, but everyone who marked that slot while playing will still have it marked!</p>

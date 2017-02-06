@@ -52,7 +52,7 @@ header nav ul {
 }
 
 header nav ul li {
-    display: inline;
+    display: inline-block;
 }
 
 header nav ul li a {
@@ -190,6 +190,20 @@ svg {
     height: 0;
     opacity: 0;
     transition: all 1s;
+}
+
+ul.pills {
+    list-style-type: none;
+    text-align: center;
+}
+
+ul.pills li {
+    margin: 0 0.5em;
+    padding: 0.5em;
+    display: inline-block;
+    background-color: #343445;
+    border: 0 solid transparent;
+    border-radius: 4px;
 }
 
 ul.fancypants {
