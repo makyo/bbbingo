@@ -4,7 +4,7 @@
 <div class="half">
     <h3>Cards</h3>
     <ul class="fancypants">
-        {% for card in user.cards|reverse %}
+        {% for card in cards|reverse %}
             {% if card.privacy == 'public' or
                   (card.privacy == 'loggedin' and session.user) or
                   (card.privacy in ['unlisted', 'private'] and user == session.user) %}
@@ -18,7 +18,7 @@
 <div class="half">
     <h3>Plays</h3>
     <ul class="fancypants">
-        {% for play in user.plays|reverse %}
+        {% for play in plays|reverse %}
             {% if play.card.privacy == 'public' or
                   (play.card.privacy == 'loggedin' and session.user) or
                   (play.card.privacy in ['unlisted', 'private'] and user == session.user) %}

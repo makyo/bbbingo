@@ -95,6 +95,7 @@ def generate_slot_svg(text):
         i += 1
     return slot_text
 
+
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
 app.jinja_env.globals['cachebust'] = cachebust
 app.jinja_env.globals['slot_text'] = generate_slot_svg
@@ -198,10 +199,14 @@ def register():
 @app.route('/~<username>', methods=['GET','POST'])
 def profile(username):
     user = models.User.objects.get(username=username)
+    cards = models.Card.objects.filter(owner=user)
+    plays = models.Play.objects.filter(owner=user).select_related()
     return render_template('profile.html',
                            title='Hey hey, look it\'s {}'.format(
                                user.username),
-                           user=user)
+                           user=user,
+                           cards=cards,
+                           plays=plays)
 
 
 @app.route('/category/<category>', methods=['GET'])
@@ -239,6 +244,8 @@ def build_card():
             privacy='public',
             playable='yes',
             values= [''] * 25)
+        card.save()
+        card.short_id = models.short_id(card)
         card.save()
         g.user.cards.append(card)
         g.user.save()
@@ -357,6 +364,8 @@ def play_card(card_id):
             card=card,
             order=order,
             solution=[False] * 25)
+        play.save()
+        play.short_id = models.short_id(play)
         play.save()
         card.plays.append(play)
         card.save()
@@ -510,6 +519,18 @@ def view_card(part1, part2, part3, part4):
                            title='Neat, it\'s {}\'s card {}'.format(
                                card.owner.username,
                                card.slug if card.name is None else card.name))
+
+
+@app.route('/-<short_card_id>', methods=['GET'])
+def short_view_card(short_card_id):
+    card = models.Card.objects.get(short_id=short_card_id)
+    return redirect('/{}'.format(card.slug))
+
+
+@app.route('/!<short_play_id>', methods=['GET'])
+def short_view_play(short_play_id):
+    play = models.Play.objects.get(short_id=short_play_id)
+    return redirect('/{}/{}'.format(play.card.slug, play.slug))
 
 
 if __name__ == '__main__':

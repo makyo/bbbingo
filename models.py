@@ -1,3 +1,5 @@
+import base64
+
 from bbbingo import db
 
 
@@ -11,6 +13,7 @@ class User(db.Document):
 
 class Card(db.Document):
     slug = db.StringField(unique=True)
+    short_id = db.StringField()
     name = db.StringField()
     owner = db.ReferenceField(User)
     category = db.StringField(default='uncategorized')
@@ -44,6 +47,7 @@ class Card(db.Document):
 
 class Play(db.Document):
     slug = db.StringField(unique=True)
+    short_id = db.StringField()
     owner = db.ReferenceField(User)
     card = db.ReferenceField(Card)
     description = db.StringField()
@@ -53,3 +57,7 @@ class Play(db.Document):
     meta = {
         'ordering': ['-id'],
     }
+
+
+def short_id(model):
+    return base64.urlsafe_b64encode(model.id.binary[-3:]).decode()

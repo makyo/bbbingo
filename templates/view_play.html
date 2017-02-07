@@ -4,6 +4,7 @@
 <div class="card">
     <h3>{{ play.description if play.description else play.slug }}</h3>
     {% include "card_embed.svg" %}
+    <p><a href="/!{{ play.short_id }}">Short link</a></p>
 </div>
 {% if g.user.username == play.owner.username %}
     <div>
