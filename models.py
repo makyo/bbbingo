@@ -26,7 +26,7 @@ class Card(db.Document):
     plays = db.ListField(db.ReferenceField('Play'))
 
     meta = {
-        'ordering': ['-id'],
+        'ordering': ['id'],
     }
 
     def is_playable(self, user):
@@ -55,7 +55,7 @@ class Play(db.Document):
     solution = db.ListField(db.BooleanField())
 
     meta = {
-        'ordering': ['-id'],
+        'ordering': ['id'],
     }
 
 

@@ -7,7 +7,7 @@
         {% for card in cards|reverse %}
             {% if card.privacy == 'public' or
                   (card.privacy == 'loggedin' and session.user) or
-                  (card.privacy in ['unlisted', 'private'] and user == session.user) %}
+                  (card.privacy in ['unlisted', 'private'] and user.username == session.user.username) %}
                  <li>{% include "card_item.html" %}</li>
             {% endif %}
         {% else %}
@@ -21,7 +21,7 @@
         {% for play in plays|reverse %}
             {% if play.card.privacy == 'public' or
                   (play.card.privacy == 'loggedin' and session.user) or
-                  (play.card.privacy in ['unlisted', 'private'] and user == session.user) %}
+                  (play.card.privacy in ['unlisted', 'private'] and user.username == session.user.username) %}
                  <li>{% include "play_item.html" %}</li>
             {% endif %}
         {% else %}

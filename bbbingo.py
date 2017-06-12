@@ -263,7 +263,7 @@ def edit_card(card_id):
         if g.user != card.owner:
             abort(403)
         return render_template('build.html',
-                               title="Building {}! Woo!".format(
+                               title=u"Building {}! Woo!".format(
                                    card.slug if card.name is None
                                    else card.name),
                                card=card,
@@ -388,7 +388,7 @@ def edit_play(card_id, play_id):
         return render_template('play.html',
                                play=play,
                                card=card,
-                               title='{}! Playtime!'.format(
+                               title=u'{}! Playtime!'.format(
                                    card.slug if card.name is None
                                    else card.name))
     else:
@@ -466,7 +466,7 @@ def view_play(part1, part2, part3, part4, play_id):
     return render_template('view_play.html',
                            card=card,
                            play=play,
-                           title='{}\'s play of {}'.format(
+                           title=u'{}\'s play of {}'.format(
                                play.owner.username,
                                card.slug if card.name is None \
                                    else card.name))
@@ -516,7 +516,7 @@ def view_card(part1, part2, part3, part4):
         abort(403)
     return render_template('view_card.html',
                            card=card,
-                           title='Neat, it\'s {}\'s card {}'.format(
+                           title=u'Neat, it\'s {}\'s card {}'.format(
                                card.owner.username,
                                card.slug if card.name is None else card.name))
 
