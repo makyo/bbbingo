@@ -21,5 +21,5 @@ pymongo==3.4.0
 pyparsing==2.1.10
 RandomWords==0.2.0
 six==1.10.0
-Werkzeug==0.11.15
+Werkzeug==0.15.3
 WTForms==2.1
